@@ -5,12 +5,10 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ApplicationRequest;
 use App\Http\Requests\ApplicationResponceRequest;
-use App\Http\Requests\RegisterRequest;
 use App\Http\Resources\ApplicationResource;
 use App\Models\Application;
 use App\Models\User;
 use App\Services\ApplicationServiceInterface;
-use App\Services\UserServiceInterface;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -19,38 +17,13 @@ use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class ApiController extends Controller
 {
-    private $userService;
-
     private $applicationServie;
 
-    public function __construct(ApplicationServiceInterface $applicationService,
-                                UserServiceInterface        $userService)
+    public function __construct(ApplicationServiceInterface $applicationService)
     {
-        $this->userService = $userService;
         $this->applicationServie = $applicationService;
     }
 
-    /**
-     * @param RegisterRequest $request
-     * @param UserServiceInterface $service
-     * @return JsonResponse
-     */
-    public function register(RegisterRequest $request): JsonResponse
-    {
-        try {
-            $token = $this->userService->register($request);
-            return (new ApplicationResource([
-                'token' => $token,
-                'message' => 'Successfully created user!'
-            ]))
-                ->response()
-                ->setStatusCode(201);
-        } catch (Exception $e) {
-            return (new ApplicationResource(['error' => 'Registration attempt failed']))
-                ->response()
-                ->setStatusCode(401);
-        }
-    }
 
     /**
      * @param ApplicationRequest $request
